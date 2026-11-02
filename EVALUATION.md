@@ -35,11 +35,11 @@ Evaluated across test user personas against ground-truth holdout activity:
 
 | Cohort | Relevant Items | NDCG@10 | Precision@10 | Recall@10 | ILD Diversity | Latency (ms) |
 |---|---|---|---|---|---|---|
-| **Elena Vance (Fashion Shopper)** | 3 items | **1.0000** | 30.0% | 100.0% | 0.9312 | 1.84 ms |
-| **David Chen (Tech & Audio)** | 3 items | **1.0000** | 30.0% | 100.0% | 0.9405 | 1.92 ms |
-| **Maya Lin (Skincare & Beauty)** | 3 items | **1.0000** | 30.0% | 100.0% | 0.9284 | 1.76 ms |
-| **Alex Miller (Fitness Buff)** | 2 items | **0.7968** | 20.0% | 100.0% | 0.9382 | 1.71 ms |
-| **Aggregate Mean** | — | **0.9492** | **25.0%** | **100.0%** | **0.9346** | **p95: 4.98 ms** |
+| **Elena Vance (Fashion Shopper)** | 5 items | **1.0000** | 20.0% | 40.0% | 0.9612 | 1.81 ms |
+| **David Chen (Tech & Audio)** | 4 items | **0.9346** | 30.0% | 75.0% | 0.9680 | 1.88 ms |
+| **Maya Lin (Skincare & Beauty)** | 4 items | **1.0000** | 20.0% | 50.0% | 0.9590 | 1.76 ms |
+| **Alex Miller (Fitness Buff)** | 3 items | **0.8000** | 10.0% | 33.3% | 0.9634 | 1.72 ms |
+| **Aggregate Mean (125 Posts Catalog)** | — | **0.9336** | **20.0%** | **49.6%** | **0.9629** | **p95: 2.08 ms** |
 
 ---
 
