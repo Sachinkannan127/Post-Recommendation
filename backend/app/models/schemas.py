@@ -35,6 +35,8 @@ class RecommendationItem(BaseModel):
 class FeedResponse(BaseModel):
     user_id: str
     count: int
+    offset: int = 0
+    total_available: Optional[int] = None
     cold_start: bool = False
     cold_start_type: Optional[str] = None
     execution_time_ms: float

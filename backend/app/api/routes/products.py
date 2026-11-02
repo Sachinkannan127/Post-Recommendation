@@ -16,13 +16,14 @@ db = get_database()
 @router.get("/products/recommendations/{user_id}", response_model=ProductRecommendationsResponse)
 def get_product_recommendations(
     user_id: str,
-    limit: int = Query(8, ge=1, le=24)
+    limit: int = Query(16, ge=1, le=100, description="Number of products to recommend"),
+    offset: int = Query(0, ge=0, description="Pagination offset for continuous product feed")
 ):
     """
     Personalized product recommendations based on shopping behavior and social affinities.
     """
     try:
-        raw_recs = recommend_products(user_id=user_id, limit=limit, db=db)
+        raw_recs = recommend_products(user_id=user_id, limit=limit, offset=offset, db=db)
         items = []
         for r in raw_recs:
             prod = r.get("product") or {}
@@ -50,6 +51,7 @@ def get_product_recommendations(
 @router.get("/products/recommendations", response_model=ProductRecommendationsResponse)
 def get_product_recommendations_query(
     user_id: str = Query(..., description="Target user ID"),
-    limit: int = Query(8, ge=1, le=24)
+    limit: int = Query(16, ge=1, le=100),
+    offset: int = Query(0, ge=0)
 ):
-    return get_product_recommendations(user_id=user_id, limit=limit)
+    return get_product_recommendations(user_id=user_id, limit=limit, offset=offset)

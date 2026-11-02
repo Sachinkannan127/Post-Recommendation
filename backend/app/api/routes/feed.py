@@ -14,7 +14,8 @@ hybrid_engine = HybridRecommender()
 @router.get("/feed/{user_id}", response_model=FeedResponse)
 def get_user_feed(
     user_id: str,
-    limit: int = Query(15, ge=1, le=50, description="Number of posts to return"),
+    limit: int = Query(25, ge=1, le=100, description="Number of posts to return"),
+    offset: int = Query(0, ge=0, description="Pagination offset for continuous feed"),
     w_content: Optional[float] = Query(None, ge=0.0, le=1.0),
     w_engagement: Optional[float] = Query(None, ge=0.0, le=1.0),
     w_social: Optional[float] = Query(None, ge=0.0, le=1.0),
@@ -38,7 +39,7 @@ def get_user_feed(
         }
 
     try:
-        return hybrid_engine.get_feed(user_id=user_id, limit=limit, weights=weights)
+        return hybrid_engine.get_feed(user_id=user_id, limit=limit, offset=offset, weights=weights)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate feed: {str(e)}")
 
@@ -46,7 +47,8 @@ def get_user_feed(
 @router.get("/feed", response_model=FeedResponse)
 def get_user_feed_query(
     user_id: str = Query(..., description="Target User ID"),
-    limit: int = Query(15, ge=1, le=50, description="Number of posts to return"),
+    limit: int = Query(25, ge=1, le=100, description="Number of posts to return"),
+    offset: int = Query(0, ge=0, description="Pagination offset"),
     w_content: Optional[float] = Query(None, ge=0.0, le=1.0),
     w_engagement: Optional[float] = Query(None, ge=0.0, le=1.0),
     w_social: Optional[float] = Query(None, ge=0.0, le=1.0),
@@ -57,6 +59,7 @@ def get_user_feed_query(
     return get_user_feed(
         user_id=user_id,
         limit=limit,
+        offset=offset,
         w_content=w_content,
         w_engagement=w_engagement,
         w_social=w_social,

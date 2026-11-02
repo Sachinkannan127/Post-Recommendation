@@ -16,7 +16,7 @@ class ProductRecommender:
     def __init__(self, db: Any):
         self.db = db
 
-    def recommend_products(self, user_id: str, limit: int = 8) -> List[Dict[str, Any]]:
+    def recommend_products(self, user_id: str, limit: int = 16, offset: int = 0) -> List[Dict[str, Any]]:
         profile = build_user_profile(user_id, self.db)
         all_products = list(self.db.products.find({}))
         if not all_products:
@@ -59,7 +59,7 @@ class ProductRecommender:
                     reasons.append(f"Matches your interest in {cat_id.replace('cat_', '').title()}")
 
             # 4. Product Vector Similarity
-            if profile.user_vector is not None and p_embedding is not None:
+            if profile.user_vector is not None and p_embedding is not None and len(p_embedding) == len(profile.user_vector):
                 sim = float(np.dot(profile.user_vector, np.array(p_embedding, dtype=float)))
                 score += (max(0.0, sim) * 0.30)
 
@@ -99,15 +99,15 @@ class ProductRecommender:
             })
 
         scored_products.sort(key=lambda x: x["score"], reverse=True)
-        return scored_products[:limit]
+        return scored_products[offset : offset + limit]
 
 
-def recommend_products(user_id: str, limit: int = 8, db: Optional[Any] = None) -> List[Dict[str, Any]]:
+def recommend_products(user_id: str, limit: int = 16, offset: int = 0, db: Optional[Any] = None) -> List[Dict[str, Any]]:
     if db is None:
         from backend.app.database.mongodb import get_database
         db = get_database()
     engine = ProductRecommender(db)
-    raw = engine.recommend_products(user_id=user_id, limit=limit)
+    raw = engine.recommend_products(user_id=user_id, limit=limit, offset=offset)
     # Format for API route
     formatted = []
     for item in raw:

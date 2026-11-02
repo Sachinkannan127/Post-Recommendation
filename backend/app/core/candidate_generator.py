@@ -111,8 +111,13 @@ class CandidateGenerator:
         if not all_embeddings:
             return []
 
-        post_ids = [e["post_id"] for e in all_embeddings]
-        vectors = np.array([e["embedding"] for e in all_embeddings], dtype=float)
+        expected_dim = len(profile.user_vector)
+        valid_items = [e for e in all_embeddings if isinstance(e.get("embedding"), (list, np.ndarray)) and len(e["embedding"]) == expected_dim]
+        if not valid_items:
+            return []
+
+        post_ids = [e["post_id"] for e in valid_items]
+        vectors = np.array([e["embedding"] for e in valid_items], dtype=float)
 
         # Dot product with normalized user vector gives cosine similarity
         sims = np.dot(vectors, profile.user_vector)

@@ -309,12 +309,26 @@
         <!-- Feed Center: Ranked Posts List -->
         <div class="feed-main">
           <div class="feed-controls-bar">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h2 class="text-lg font-bold text-slate-900">Recommended For You</h2>
               <span id="feedCountBadge" class="badge badge-primary">0 Posts</span>
               <span id="feedColdStartBadge" class="badge badge-warning hidden">Cold Start User</span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center gap-1.5 text-xs text-slate-600">
+                <span>Batch:</span>
+                <select id="selectFeedLimit" class="input-select text-xs py-1 px-2">
+                  <option value="20" selected>20 Posts</option>
+                  <option value="40">40 Posts</option>
+                  <option value="60">60 Posts</option>
+                  <option value="100">100 Posts</option>
+                </select>
+              </div>
+              <label class="toggle-pill cursor-pointer" title="Automatically load more posts as you scroll">
+                <input type="checkbox" id="toggleInfiniteScroll" class="sr-only">
+                <span class="toggle-track"></span>
+                <span class="text-xs font-medium text-slate-600">Auto-Scroll</span>
+              </label>
               <button class="btn btn-sm btn-outline" id="btnRefreshFeed">
                 <i data-lucide="rotate-cw"></i>
                 <span>Refresh</span>
@@ -325,6 +339,21 @@
           <!-- Feed Posts Cards Container -->
           <div id="feedPostsContainer" class="posts-feed-list">
             <!-- Dynamic Ranked Posts -->
+          </div>
+
+          <!-- Feed Pagination & Load More Footer -->
+          <div class="feed-pagination-footer" id="feedPaginationFooter">
+            <p id="feedPaginationText" class="text-xs text-slate-500 font-medium">Showing 0 of 0 Recommended Posts</p>
+            <div class="flex items-center gap-2 mt-2">
+              <button class="btn btn-primary" id="btnLoadMoreFeed">
+                <i data-lucide="sparkles"></i>
+                <span id="btnLoadMoreFeedText">Load More Recommendations</span>
+              </button>
+              <button class="btn btn-outline btn-sm" id="btnScrollTopFeed" title="Back to top">
+                <i data-lucide="arrow-up"></i>
+                <span>Top</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -482,8 +511,28 @@
         </button>
       </div>
 
+      <!-- Product Category Filters -->
+      <div class="category-filter-bar mb-6" id="productCategoryFilterBar">
+        <button class="filter-chip active" data-cat="all">All Products</button>
+        <button class="filter-chip" data-cat="Fashion">Fashion</button>
+        <button class="filter-chip" data-cat="Electronics">Electronics</button>
+        <button class="filter-chip" data-cat="Beauty">Beauty</button>
+        <button class="filter-chip" data-cat="Home Decor">Home Decor</button>
+        <button class="filter-chip" data-cat="Fitness">Fitness</button>
+        <button class="filter-chip" data-cat="Accessories">Accessories</button>
+      </div>
+
       <div id="productRecsGrid" class="product-grid">
         <!-- Injected dynamically -->
+      </div>
+
+      <!-- Product Load More Footer -->
+      <div class="feed-pagination-footer mt-8" id="productPaginationFooter">
+        <p id="productPaginationText" class="text-xs text-slate-500 font-medium">Showing 0 of 0 Recommended Products</p>
+        <button class="btn btn-primary mt-2" id="btnLoadMoreProducts">
+          <i data-lucide="package-plus"></i>
+          <span id="btnLoadMoreProductsText">Load More Products</span>
+        </button>
       </div>
     </section>
 

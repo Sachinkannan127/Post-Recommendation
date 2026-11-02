@@ -25,6 +25,17 @@ const state = {
     scoreDist: null,
   },
   feedPosts: [],
+  feedOffset: 0,
+  feedLimit: 20,
+  feedTotal: 0,
+  isFeedLoading: false,
+  infiniteScroll: false,
+  productRecs: [],
+  productOffset: 0,
+  productLimit: 16,
+  productTotal: 0,
+  selectedProductCategory: "all",
+  isProductsLoading: false,
   likedPosts: new Set(),
   bookmarkedPosts: new Set(),
   cartItems: new Set(),
@@ -104,9 +115,53 @@ function setupEventListeners() {
 
   // Refresh buttons
   document.getElementById("btnRefreshDashboard")?.addEventListener("click", loadDashboard);
-  document.getElementById("btnRefreshFeed")?.addEventListener("click", loadPersonalizedFeed);
-  document.getElementById("btnRefreshProducts")?.addEventListener("click", loadProductRecommendations);
+  document.getElementById("btnRefreshFeed")?.addEventListener("click", () => loadPersonalizedFeed(true));
+  document.getElementById("btnRefreshProducts")?.addEventListener("click", () => loadProductRecommendations(true));
   document.getElementById("btnRunBenchmark")?.addEventListener("click", runBenchmarkEvaluation);
+
+  // Feed Batch Size Selector
+  document.getElementById("selectFeedLimit")?.addEventListener("change", (e) => {
+    state.feedLimit = parseInt(e.target.value) || 20;
+    showToast(`Updated feed batch size to ${state.feedLimit} items`);
+    loadPersonalizedFeed(true);
+  });
+
+  // Feed Load More & Scroll Top
+  document.getElementById("btnLoadMoreFeed")?.addEventListener("click", loadMoreFeedPosts);
+  document.getElementById("btnScrollTopFeed")?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Infinite Scroll Toggle
+  const toggleInfinite = document.getElementById("toggleInfiniteScroll");
+  if (toggleInfinite) {
+    toggleInfinite.addEventListener("change", (e) => {
+      state.infiniteScroll = e.target.checked;
+      showToast(state.infiniteScroll ? "Auto-scroll continuous recommendations enabled" : "Auto-scroll disabled");
+    });
+  }
+
+  // Window scroll listener for continuous recommendations
+  window.addEventListener("scroll", () => {
+    if (!state.infiniteScroll || state.activeScreen !== "screen-feed" || state.isFeedLoading) return;
+    const scrollPos = window.innerHeight + window.scrollY;
+    const threshold = document.documentElement.scrollHeight - 300;
+    if (scrollPos >= threshold && state.feedPosts.length < state.feedTotal) {
+      loadMoreFeedPosts();
+    }
+  });
+
+  // Product Load More & Filters
+  document.getElementById("btnLoadMoreProducts")?.addEventListener("click", loadMoreProducts);
+
+  document.querySelectorAll("#productCategoryFilterBar .filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#productCategoryFilterBar .filter-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      state.selectedProductCategory = chip.dataset.cat;
+      filterAndRenderProducts();
+    });
+  });
 
   // Weights drawer toggle
   const drawer = document.getElementById("weightsDrawer");
@@ -305,7 +360,7 @@ function renderBenchmarkSummaryChart(comparison) {
 
 async function loadTrendingSection() {
   try {
-    const res = await fetch(`${API_BASE}/trending?limit=4`);
+    const res = await fetch(`${API_BASE}/trending?limit=8`);
     if (!res.ok) return;
     const data = await res.json();
     const container = document.getElementById("trendingPostsGrid");
@@ -329,34 +384,57 @@ async function loadTrendingSection() {
 }
 
 // ============================================================================
-// SCREEN 2: Personalized Feed Logic
+// SCREEN 2: Personalized Feed Logic (With Infinite Pagination)
 // ============================================================================
-async function loadPersonalizedFeed() {
+async function loadPersonalizedFeed(reset = true) {
+  if (state.isFeedLoading) return;
+  state.isFeedLoading = true;
+
   const container = document.getElementById("feedPostsContainer");
-  if (container) {
-    container.innerHTML = `
-      <div class="p-8 text-center text-slate-400">
-        <div class="inline-block animate-spin mb-2"><i data-lucide="loader"></i></div>
-        <p>Synthesizing taste vectors and ranking personalized posts...</p>
-      </div>
-    `;
-    if (window.lucide) window.lucide.createIcons();
+  const loadMoreBtn = document.getElementById("btnLoadMoreFeed");
+  const loadMoreText = document.getElementById("btnLoadMoreFeedText");
+
+  if (reset) {
+    state.feedOffset = 0;
+    state.feedPosts = [];
+    if (container) {
+      container.innerHTML = `
+        <div class="p-8 text-center text-slate-400">
+          <div class="inline-block animate-spin mb-2"><i data-lucide="loader"></i></div>
+          <p>Synthesizing taste vectors and ranking personalized posts...</p>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  } else {
+    if (loadMoreBtn) {
+      loadMoreBtn.disabled = true;
+      if (loadMoreText) loadMoreText.textContent = "Loading More Recommendations...";
+    }
   }
 
   try {
-    // 1. Fetch User Profile
-    await loadFeedUserProfile(state.currentUserId);
+    if (reset) {
+      await loadFeedUserProfile(state.currentUserId);
+    }
 
-    // 2. Fetch Ranked Feed
-    const url = `${API_BASE}/feed/${state.currentUserId}?limit=15&w_content=${state.weights.content}&w_engagement=${state.weights.engagement}&w_social=${state.weights.social}&w_commerce=${state.weights.commerce}&w_popularity=${state.weights.popularity}&w_freshness=${state.weights.freshness}`;
+    const url = `${API_BASE}/feed/${state.currentUserId}?limit=${state.feedLimit}&offset=${state.feedOffset}&w_content=${state.weights.content}&w_engagement=${state.weights.engagement}&w_social=${state.weights.social}&w_commerce=${state.weights.commerce}&w_popularity=${state.weights.popularity}&w_freshness=${state.weights.freshness}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    state.feedPosts = data.posts || [];
+    const newPosts = data.posts || [];
+    state.feedTotal = data.total_available || (state.feedPosts.length + newPosts.length);
+
+    if (reset) {
+      state.feedPosts = newPosts;
+    } else {
+      state.feedPosts = state.feedPosts.concat(newPosts);
+    }
+
     renderFeedPosts(state.feedPosts, data);
   } catch (err) {
-    if (container) {
+    if (container && reset) {
       container.innerHTML = `
         <div class="p-8 text-center text-rose-500">
           <p class="font-bold">Failed to load feed</p>
@@ -364,7 +442,23 @@ async function loadPersonalizedFeed() {
         </div>
       `;
     }
+  } finally {
+    state.isFeedLoading = false;
+    if (loadMoreBtn) {
+      const isExhausted = state.feedPosts.length >= state.feedTotal;
+      loadMoreBtn.disabled = isExhausted;
+      if (loadMoreText) {
+        loadMoreText.textContent = isExhausted ? "All Recommendations Caught Up" : "Load More Recommendations";
+      }
+    }
   }
+}
+
+async function loadMoreFeedPosts() {
+  if (state.isFeedLoading) return;
+  if (state.feedPosts.length >= state.feedTotal && state.feedTotal > 0) return;
+  state.feedOffset = state.feedPosts.length;
+  await loadPersonalizedFeed(false);
 }
 
 async function loadFeedUserProfile(userId) {
@@ -414,6 +508,11 @@ function renderFeedPosts(posts, meta) {
 
   document.getElementById("feedCountBadge").textContent = `${posts.length} Posts Ranked`;
   document.getElementById("feedLatency").textContent = `${meta.execution_time_ms || 2.4} ms`;
+  
+  const paginationText = document.getElementById("feedPaginationText");
+  if (paginationText) {
+    paginationText.textContent = `Showing ${posts.length} of ${state.feedTotal || posts.length} Recommended Posts`;
+  }
 
   const coldStartBadge = document.getElementById("feedColdStartBadge");
   if (meta.cold_start) {
@@ -775,54 +874,113 @@ async function loadUserInsights() {
 }
 
 // ============================================================================
-// SCREEN 5: Product Recommendations Logic
+// SCREEN 5: Product Recommendations Logic (With Pagination & Category Filters)
 // ============================================================================
-async function loadProductRecommendations() {
+async function loadProductRecommendations(reset = true) {
+  if (state.isProductsLoading) return;
+  state.isProductsLoading = true;
+
   const container = document.getElementById("productRecsGrid");
-  if (container) {
-    container.innerHTML = `
-      <div class="col-span-full p-8 text-center text-slate-400">
-        <p>Loading personalized e-commerce products for ${state.currentUserId}...</p>
-      </div>
-    `;
+  const loadMoreBtn = document.getElementById("btnLoadMoreProducts");
+  const loadMoreText = document.getElementById("btnLoadMoreProductsText");
+
+  if (reset) {
+    state.productOffset = 0;
+    state.productRecs = [];
+    if (container) {
+      container.innerHTML = `
+        <div class="col-span-full p-8 text-center text-slate-400">
+          <div class="inline-block animate-spin mb-2"><i data-lucide="loader"></i></div>
+          <p>Loading personalized e-commerce products for ${state.currentUserId}...</p>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  } else {
+    if (loadMoreBtn) {
+      loadMoreBtn.disabled = true;
+      if (loadMoreText) loadMoreText.textContent = "Loading More Products...";
+    }
   }
 
   try {
-    const res = await fetch(`${API_BASE}/products/recommendations/${state.currentUserId}?limit=8`);
+    const res = await fetch(`${API_BASE}/products/recommendations/${state.currentUserId}?limit=${state.productLimit}&offset=${state.productOffset}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
     const prods = data.products || [];
-    if (prods.length === 0) {
-      container.innerHTML = `<p class="col-span-full text-center text-slate-400">No products found</p>`;
-      return;
+    if (reset) {
+      state.productRecs = prods;
+    } else {
+      state.productRecs = state.productRecs.concat(prods);
     }
 
-    container.innerHTML = prods.map((prod) => `
-      <div class="product-card">
-        <div class="product-img-box">
-          <img src="${prod.image_url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${prod.title}">
-          <span class="product-sim-badge">${(prod.similarity_score * 100).toFixed(0)}% MATCH</span>
-        </div>
-        <div class="product-body">
-          <span class="badge badge-neutral mb-1">${prod.category || 'General'}</span>
-          <h4 class="product-title line-clamp-1">${prod.title}</h4>
-          <span class="product-reason">${prod.reason}</span>
-          <div class="product-price-row">
-            <span class="product-price">$${prod.price.toFixed(2)}</span>
-            <button class="btn btn-sm btn-primary" onclick="showToast('Added ${prod.title} to cart!')">
-              <i data-lucide="shopping-cart"></i>
-              <span>Add</span>
-            </button>
-          </div>
+    state.productTotal = data.total_available || (state.productRecs.length + (prods.length < state.productLimit ? 0 : 25));
+
+    filterAndRenderProducts();
+  } catch (err) {
+    if (container && reset) {
+      container.innerHTML = `<p class="col-span-full text-rose-500 text-center">Failed: ${err.message}</p>`;
+    }
+  } finally {
+    state.isProductsLoading = false;
+    if (loadMoreBtn) {
+      const isExhausted = state.productRecs.length >= state.productTotal || (state.productRecs.length % state.productLimit !== 0 && state.productRecs.length > 0);
+      loadMoreBtn.disabled = isExhausted;
+      if (loadMoreText) {
+        loadMoreText.textContent = isExhausted ? "All Products Caught Up" : "Load More Products";
+      }
+    }
+  }
+}
+
+async function loadMoreProducts() {
+  if (state.isProductsLoading) return;
+  state.productOffset = state.productRecs.length;
+  await loadProductRecommendations(false);
+}
+
+function filterAndRenderProducts() {
+  const container = document.getElementById("productRecsGrid");
+  if (!container) return;
+
+  let displayList = state.productRecs;
+  if (state.selectedProductCategory && state.selectedProductCategory !== "all") {
+    displayList = displayList.filter(p => (p.category || "").toLowerCase() === state.selectedProductCategory.toLowerCase());
+  }
+
+  const paginationText = document.getElementById("productPaginationText");
+  if (paginationText) {
+    paginationText.textContent = `Showing ${displayList.length} of ${state.productRecs.length} Recommended Products`;
+  }
+
+  if (displayList.length === 0) {
+    container.innerHTML = `<p class="col-span-full text-center text-slate-400 p-8">No products found for this category</p>`;
+    return;
+  }
+
+  container.innerHTML = displayList.map((prod) => `
+    <div class="product-card">
+      <div class="product-img-box">
+        <img src="${prod.image_url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${prod.title}">
+        <span class="product-sim-badge">${(prod.similarity_score * 100).toFixed(0)}% MATCH</span>
+      </div>
+      <div class="product-body">
+        <span class="badge badge-neutral mb-1">${prod.category || 'General'}</span>
+        <h4 class="product-title line-clamp-1">${prod.title}</h4>
+        <span class="product-reason">${prod.reason}</span>
+        <div class="product-price-row">
+          <span class="product-price">$${prod.price.toFixed(2)}</span>
+          <button class="btn btn-sm btn-primary" onclick="showToast('Added to cart!')">
+            <i data-lucide="shopping-cart"></i>
+            <span>Add</span>
+          </button>
         </div>
       </div>
-    `).join("");
+    </div>
+  `).join("");
 
-    if (window.lucide) window.lucide.createIcons();
-  } catch (err) {
-    if (container) container.innerHTML = `<p class="col-span-full text-rose-500 text-center">Failed: ${err.message}</p>`;
-  }
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ============================================================================

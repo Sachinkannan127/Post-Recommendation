@@ -94,8 +94,11 @@ class MockCursor:
             for k, d in sort_keys:
                 v = doc.get(k)
                 if v is None:
-                    v = "" if d == 1 else ""
-                vals.append(v)
+                    vals.append((0, 0.0))
+                elif isinstance(v, (int, float)):
+                    vals.append((1, float(v)))
+                else:
+                    vals.append((2, str(v)))
             return tuple(vals)
 
         # Apply primary sort direction
@@ -241,11 +244,14 @@ class MockDatabase:
     def list_collection_names(self) -> List[str]:
         return list(self._collections.keys())
 
-    def save_to_disk(self, file_path: str):
+    def save_to_disk(self, file_path: Optional[str] = None):
+        target = file_path or self.storage_path
+        if not target:
+            return
         payload = {}
         for coll_name, coll in self._collections.items():
             payload[coll_name] = coll._docs
-        with open(file_path, "w", encoding="utf-8") as f:
+        with open(target, "w", encoding="utf-8") as f:
             json.dump(payload, f, default=str, indent=2)
 
     def load_from_disk(self, file_path: str):

@@ -341,8 +341,8 @@ def seed_database(force_refresh: bool = False):
         images = post_images[cat_id]
         captions = caption_hooks[cat_id]
 
-        # Generate 25 posts per category = 125 total posts
-        for i in range(25):
+        # Generate 60 posts per category = 300 total posts
+        for i in range(60):
             post_counter += 1
             p_id = f"post_{cat_id}_{i+1:02d}"
             seller = cat_sellers[i % len(cat_sellers)]

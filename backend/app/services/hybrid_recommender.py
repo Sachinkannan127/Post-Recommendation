@@ -40,7 +40,8 @@ class HybridRecommender:
     def get_feed(
         self,
         user_id: str,
-        limit: int = 15,
+        limit: int = 25,
+        offset: int = 0,
         weights: Optional[Dict[str, float]] = None,
         exploration_rate: Optional[float] = None,
         is_evaluation: bool = False
@@ -211,22 +212,26 @@ class HybridRecommender:
         scored_items.sort(key=lambda x: x["final_score"], reverse=True)
 
         # 4. Diversity Re-ranking & Exploration
-        reranked = self._apply_diversity_and_exploration(
+        total_available = len(scored_items)
+        reranked_pool = self._apply_diversity_and_exploration(
             items=scored_items,
-            limit=limit,
+            limit=limit + offset,
             exploration_rate=exploration_rate or settings.EXPLORATION_RATE
         )
+        paginated_items = reranked_pool[offset : offset + limit]
 
         execution_time_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
 
         return FeedResponse(
             user_id=user_id,
-            count=len(reranked),
+            count=len(paginated_items),
+            offset=offset,
+            total_available=total_available,
             cold_start=is_new_user,
             cold_start_type=cold_start_type,
             execution_time_ms=execution_time_ms,
             weights_used=w,
-            posts=[RecommendationItem(**item) for item in reranked]
+            posts=[RecommendationItem(**item) for item in paginated_items]
         )
 
     def _apply_diversity_and_exploration(

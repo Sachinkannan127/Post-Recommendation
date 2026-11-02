@@ -28,7 +28,7 @@ from backend.app.main import app
 @pytest.fixture(scope="module")
 def setup_db():
     db = get_db()
-    seed_database(force_refresh=True)
+    seed_database(force_refresh=False)
     return db
 
 
