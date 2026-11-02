@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextGen — Social Commerce Recommendation Platform</title>
+  <meta name="description" content="Intelligent Multi-Objective Recommendation Engine for Social Commerce Posts and Products">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-logo">
+        <span class="logo-badge">NEXTGEN</span>
+        <span class="logo-sub">AI RecSys Engine</span>
+      </div>
+      <div class="db-status-pill" id="dbStatusPill" title="Click to view DB details">
+        <span class="status-dot"></span>
+        <span id="dbStatusText">Checking DB...</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <!-- Persona Selector -->
+      <div class="persona-selector-container">
+        <label for="personaSelect">Active User Persona:</label>
+        <select id="personaSelect" class="persona-select">
+          <option value="user_fashion_lover">Elena Vance (Fashion Shopper)</option>
+          <option value="user_tech_geek">David Chen (Tech & Audio Geek)</option>
+          <option value="user_beauty_seeker">Maya Lin (Skincare Enthusiast)</option>
+          <option value="user_fitness_buff">Alex Miller (Home Gym Athlete)</option>
+          <option value="user_cold_start">✨ New Visitor (Cold Start)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="btn btn-secondary" id="btnOpenEval">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Model Benchmarks
+      </button>
+      <button class="btn btn-primary" id="btnOpenTuner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Weights Tuner
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-layout">
+    <!-- Left Sidebar: Persona Insights & Signal Radar -->
+    <aside class="sidebar-left">
+      <div class="user-card" id="userProfileCard">
+        <div class="user-header">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" id="userAvatar" class="user-avatar" alt="Avatar">
+          <div>
+            <h3 id="userName">Elena Vance</h3>
+            <span class="user-badge" id="userBadge">Fashion Shopper</span>
+          </div>
+        </div>
+        <p class="user-desc" id="userDesc">Loading persona details...</p>
+
+        <div class="signal-stats-grid">
+          <div class="stat-box">
+            <span class="stat-val" id="statFollows">1</span>
+            <span class="stat-lbl">Follows</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="statCart">1</span>
+            <span class="stat-lbl">In Cart</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="statOrders">1</span>
+            <span class="stat-lbl">Purchases</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="statAvgWatch">92%</span>
+            <span class="stat-lbl">Avg Watch</span>
+          </div>
+        </div>
+
+        <div class="category-affinity-container">
+          <h4>Category Affinity Distribution</h4>
+          <div id="categoryBars" class="category-bars">
+            <!-- Dynamic Category Bars -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Latency & Diagnostic Card -->
+      <div class="pipeline-card">
+        <h4>⚡ Pipeline Execution Latency</h4>
+        <div class="latency-row">
+          <span>Candidate Retrieval:</span>
+          <span class="mono-val" id="latRetrieval">0.8 ms</span>
+        </div>
+        <div class="latency-row">
+          <span>Multi-Factor Ranking:</span>
+          <span class="mono-val" id="latRanking">0.7 ms</span>
+        </div>
+        <div class="latency-row">
+          <span>Diversity Re-ranking:</span>
+          <span class="mono-val" id="latRerank">0.3 ms</span>
+        </div>
+        <div class="latency-total">
+          <span>End-to-End Latency:</span>
+          <span class="mono-val highlight" id="latTotal">1.8 ms</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Content: Social Commerce Feed -->
+    <main class="feed-main">
+      <!-- Section Title & Feed Filters -->
+      <div class="feed-controls-bar">
+        <div>
+          <h2>Social Commerce Feed</h2>
+          <p class="subtitle">AI-ranked posts based on social resonance, content similarity & commerce intent.</p>
+        </div>
+        <button class="btn btn-sm btn-ghost" id="btnRefreshFeed">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Refresh Feed
+        </button>
+      </div>
+
+      <!-- Feed Container -->
+      <div id="feedContainer" class="feed-container">
+        <!-- Rendered Feed Cards -->
+        <div class="feed-loading">
+          <div class="spinner"></div>
+          <p>Generating personalized recommendations...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Sidebar: Product Recommendations (Stretch Goal) -->
+    <aside class="sidebar-right">
+      <div class="product-recs-panel">
+        <div class="panel-header">
+          <div>
+            <h3>🛍️ Product Spotlight</h3>
+            <span class="panel-sub">Optional Stretch Goal</span>
+          </div>
+          <span class="tag-badge">Intent-Driven</span>
+        </div>
+        <p class="section-hint">Surfaced via browsing, pinned post watch time, and product embeddings.</p>
+
+        <div id="productRecsList" class="product-recs-list">
+          <!-- Rendered Products -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Weights Tuner Drawer / Modal -->
+  <div class="modal-overlay" id="tunerModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🎛️ Recommendation Ranking Weights Tuner</h3>
+        <button class="btn-close" id="btnCloseTuner">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Interactively calibrate the multi-objective ranking equation:
+          <br>
+          <code>Score = w_social · S_social + w_content · S_content + w_commerce · S_commerce + w_quality · S_quality · R(t) - Fatigue</code>
+        </p>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Social Graph Weight (w_social):</span>
+            <span class="slider-val" id="valSocial">0.28</span>
+          </div>
+          <input type="range" id="sliderSocial" min="0" max="1" step="0.05" value="0.28">
+          <small>Boosts posts from creators user explicitly follows.</small>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Content Semantic Similarity (w_content):</span>
+            <span class="slider-val" id="valContent">0.27</span>
+          </div>
+          <input type="range" id="sliderContent" min="0" max="1" step="0.05" value="0.27">
+          <small>Cosine vector similarity between user profile and post embeddings.</small>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Commerce Intent (w_commerce):</span>
+            <span class="slider-val" id="valCommerce">0.25</span>
+          </div>
+          <input type="range" id="sliderCommerce" min="0" max="1" step="0.05" value="0.25">
+          <small>Prioritizes posts pinned to cart items, order history, and category affinities.</small>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>Quality & Watch Completion (w_quality):</span>
+            <span class="slider-val" id="valQuality">0.20</span>
+          </div>
+          <input type="range" id="sliderQuality" min="0" max="1" step="0.05" value="0.20">
+          <small>Smoothed engagement rate & historical average watch percentage.</small>
+        </div>
+
+        <div class="toggle-group">
+          <label class="switch-label">
+            <input type="checkbox" id="chkExploration" checked>
+            <span class="switch-slider"></span>
+            <span>Enable Serendipity Bandit Exploration (ε = 12%)</span>
+          </label>
+          <small>Injects fresh items from unrepresented categories to prevent filter bubbles.</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnResetWeights">Reset Defaults</button>
+        <button class="btn btn-primary" id="btnApplyWeights">Apply & Re-rank Feed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluation Benchmark Modal -->
+  <div class="modal-overlay" id="evalModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>📊 Offline RecSys Benchmark Suite</h3>
+        <button class="btn-close" id="btnCloseEval">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Automated offline evaluation comparing recommended rankings against holdout user engagement and watch history.
+        </p>
+
+        <div class="eval-metrics-grid" id="evalMetricsGrid">
+          <div class="metric-card">
+            <span class="metric-title">Mean NDCG@10</span>
+            <span class="metric-value" id="metricNdcg">--</span>
+            <span class="metric-sub">Ranking Quality</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Mean Hit Rate@10</span>
+            <span class="metric-value" id="metricHitRate">--</span>
+            <span class="metric-sub">Catalog Discovery</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Intra-List Diversity (ILD)</span>
+            <span class="metric-value" id="metricDiversity">--</span>
+            <span class="metric-sub">Cosine Dissimilarity</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Latency (p95)</span>
+            <span class="metric-value" id="metricLatency">--</span>
+            <span class="metric-sub">Real-Time Response</span>
+          </div>
+        </div>
+
+        <div class="eval-table-container">
+          <h4>Per-User Test Cohort Breakdown</h4>
+          <table class="eval-table" id="evalTable">
+            <thead>
+              <tr>
+                <th>User Cohort</th>
+                <th>Ground Truth Items</th>
+                <th>NDCG@10</th>
+                <th>Precision@10</th>
+                <th>Recall@10</th>
+                <th>ILD Diversity</th>
+                <th>Latency (ms)</th>
+              </tr>
+            </thead>
+            <tbody id="evalTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnReRunEval">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Re-run Benchmark
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
