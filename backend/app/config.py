@@ -4,6 +4,11 @@ Loads environment variables safely using Pydantic Settings.
 """
 import os
 from typing import Dict, Any
+from dotenv import load_dotenv
+
+# Ensure .env explicitly overrides OS level env variables
+load_dotenv(dotenv_path=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env")), override=True)
+
 from pydantic_settings import BaseSettings
 from pydantic import Field, ConfigDict
 
