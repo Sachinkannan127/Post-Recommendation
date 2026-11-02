@@ -18,7 +18,7 @@
         <span class="logo-badge">NEXTGEN</span>
         <span class="logo-sub">AI RecSys Engine</span>
       </div>
-      <div class="db-status-pill" id="dbStatusPill" title="Click to view DB details">
+      <div class="db-status-pill" id="dbStatusPill" title="Click to view database connection details & collections">
         <span class="status-dot"></span>
         <span id="dbStatusText">Checking DB...</span>
       </div>
@@ -285,6 +285,53 @@
       </div>
     </div>
   </div>
+
+  <!-- Database Status & Reconnection Modal -->
+  <div class="modal-overlay" id="dbModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🗄️ Database Connection & Collections</h3>
+        <button class="btn-close" id="btnCloseDbModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="db-info-box">
+          <div class="db-info-row">
+            <span>Status:</span>
+            <strong id="dbModalStatusText">Checking...</strong>
+          </div>
+          <div class="db-info-row">
+            <span>Total Documents:</span>
+            <strong id="dbModalTotalDocs">0</strong>
+          </div>
+        </div>
+
+        <div class="reconnect-box">
+          <h4>Connect Live MongoDB Atlas URI</h4>
+          <p class="modal-desc" style="margin-bottom:0.65rem;">
+            If you have updated MongoDB credentials, enter them below to switch live:
+          </p>
+          <div class="input-group">
+            <input type="text" id="inputMongoUri" class="text-input" placeholder="mongodb+srv://user:pass@cluster.mongodb.net/dbname">
+            <button class="btn btn-primary btn-sm" id="btnTestReconnect">Test & Connect</button>
+          </div>
+          <small id="reconnectFeedback" style="display:block; margin-top:0.35rem; font-size:0.75rem;"></small>
+        </div>
+
+        <div class="collections-counts-box">
+          <h4>13 Populated Collections</h4>
+          <div class="collections-grid" id="dbModalCollectionsList">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseDbModalFooter">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <script src="/static/app.js"></script>
 </body>
