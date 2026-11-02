@@ -78,9 +78,11 @@ class RecSysEvaluator:
             if not relevant_post_ids:
                 continue
 
-            # Measure latency
+            # Measure latency with evaluation weights (no fatigue penalty on holdout interactions)
+            from backend.app.core.ranker import RankingWeights
+            eval_weights = RankingWeights(fatigue_penalty=0.0)
             t0 = time.perf_counter()
-            rec_result = self.recommender.get_feed(u_id, limit=k, enable_exploration=False)
+            rec_result = self.recommender.get_feed(u_id, limit=k, weights_override=eval_weights, enable_exploration=False)
             latency = (time.perf_counter() - t0) * 1000.0
             latencies_ms.append(latency)
 
