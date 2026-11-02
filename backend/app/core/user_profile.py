@@ -33,6 +33,20 @@ class UserProfile:
         self.avg_watch_pct = avg_watch_pct
         self.total_interactions = total_interactions
 
+    @property
+    def interaction_count(self) -> int:
+        return self.total_interactions
+
+    @property
+    def embedding(self) -> Optional[List[float]]:
+        if self.user_vector is not None:
+            return self.user_vector.tolist()
+        return None
+
+    @property
+    def viewed_post_ids(self) -> Set[str]:
+        return self.engaged_post_ids
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "user_id": self.user_id,

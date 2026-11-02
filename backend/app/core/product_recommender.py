@@ -100,3 +100,29 @@ class ProductRecommender:
 
         scored_products.sort(key=lambda x: x["score"], reverse=True)
         return scored_products[:limit]
+
+
+def recommend_products(user_id: str, limit: int = 8, db: Optional[Any] = None) -> List[Dict[str, Any]]:
+    if db is None:
+        from backend.app.database.mongodb import get_database
+        db = get_database()
+    engine = ProductRecommender(db)
+    raw = engine.recommend_products(user_id=user_id, limit=limit)
+    # Format for API route
+    formatted = []
+    for item in raw:
+        prod_doc = db.products.find_one({"product_id": item["product_id"]}) or db.products.find_one({"_id": item["product_id"]}) or {}
+        img = prod_doc.get("image_url") or "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
+        formatted.append({
+            "product_id": item["product_id"],
+            "score": item["score"],
+            "reason": item["reasons"][0] if item["reasons"] else "Popular product match",
+            "product": {
+                "product_id": item["product_id"],
+                "title": item["title"] or prod_doc.get("title", "Curated Product"),
+                "price": float(item["price"] or prod_doc.get("price", 49.99)),
+                "image_url": img,
+                "category": prod_doc.get("category", "General")
+            }
+        })
+    return formatted
