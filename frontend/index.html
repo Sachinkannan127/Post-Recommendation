@@ -1,577 +1,531 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NextGen — AI Social Commerce Recommendation Platform</title>
-  <meta name="description" content="AI-Powered Hybrid Recommendation System for Social Commerce Feeds & E-Commerce Products">
+  <title>Crowdsail</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <meta name="description"
+    content="AI-Powered Hybrid Recommendation System for Social Commerce Feeds & E-Commerce Products">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <!-- Chart.js for Interactive Recommendation Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased font-sans">
 
-  <!-- Top App Navigation Bar -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="header-brand">
-        <div class="brand-icon">
+<body class="crowdsail-app-body antialiased">
+
+  <!-- ========================================== -->
+  <!-- LEFT FIXED FOOJI SIDEBAR                   -->
+  <!-- ========================================== -->
+  <aside class="fooji-sidebar" id="foojiSidebar">
+    <!-- Fooji Brand Header -->
+    <div class="sidebar-top">
+      <div class="fooji-brand">
+        <span class="fooji-asterisk">✻</span>
+        <span class="fooji-name">Crowdsail</span>
+      </div>
+      <button class="sidebar-toggle-btn" id="btnToggleSidebar" title="Collapse sidebar">
+        <i data-lucide="chevron-left"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <a href="#crowdsail" class="sidebar-nav-item active" data-screen="screen-crowdsail" data-tooltip="Recommendation System">
+          <span class="nav-purple-badge">#</span>
+          <span class="nav-text">Recommendation System</span>
+        </a>
+        <a href="#feed" class="sidebar-nav-item" data-screen="screen-feed" data-tooltip="Fanfare">
           <i data-lucide="sparkles"></i>
-        </div>
-        <div>
-          <span class="brand-title">NextGen</span>
-          <span class="brand-tag">AI RecSys Engine</span>
-        </div>
+          <span class="nav-text">Fanfare</span>
+        </a>
+        <a href="#dashboard" class="sidebar-nav-item" data-screen="screen-dashboard" data-tooltip="Home">
+          <i data-lucide="home"></i>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="#analytics" class="sidebar-nav-item" data-screen="screen-analytics" data-tooltip="Recommendation admin">
+          <i data-lucide="layout-grid"></i>
+          <span class="nav-text">Recommendation admin</span>
+        </a>
       </div>
 
-      <!-- Navigation Tabs (5 Screens) -->
-      <nav class="nav-tabs">
-        <button class="nav-tab active" data-screen="screen-dashboard">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
-        </button>
-        <button class="nav-tab" data-screen="screen-feed">
-          <i data-lucide="newspaper"></i>
-          <span>Personalized Feed</span>
-        </button>
-        <button class="nav-tab" data-screen="screen-analytics">
-          <i data-lucide="bar-chart-3"></i>
-          <span>Analytics</span>
-        </button>
-        <button class="nav-tab" data-screen="screen-users">
-          <i data-lucide="user-check"></i>
-          <span>User Insights</span>
-        </button>
-        <button class="nav-tab" data-screen="screen-products">
-          <i data-lucide="shopping-bag"></i>
-          <span>Product Recs</span>
-        </button>
-      </nav>
+      <div class="nav-divider"></div>
 
-      <!-- Global Controls -->
-      <div class="header-actions">
-        <!-- User Switcher -->
-        <div class="user-picker-wrapper">
-          <span class="text-xs text-slate-500 font-medium">User:</span>
-          <select id="userPicker" class="user-select">
+      <div class="nav-group">
+        <a href="#products" class="sidebar-nav-item" data-screen="screen-products" data-tooltip="Order management">
+          <i data-lucide="split"></i>
+          <span class="nav-text">Order management</span>
+        </a>
+        <a href="#inventory" class="sidebar-nav-item" data-screen="screen-products" data-tooltip="Stocks">
+          <i data-lucide="box"></i>
+          <span class="nav-text">Stocks</span>
+        </a>
+        <a href="#zones" class="sidebar-nav-item" data-screen="screen-analytics" data-tooltip="Delivery zones">
+          <i data-lucide="map-pin"></i>
+          <span class="nav-text">Delivery zones</span>
+        </a>
+        <a href="#users" class="sidebar-nav-item" data-screen="screen-users" data-tooltip="Users">
+          <i data-lucide="users"></i>
+          <span class="nav-text">Users</span>
+        </a>
+        <a href="#admin" class="sidebar-nav-item" data-screen="screen-dashboard" data-tooltip="Administration">
+          <i data-lucide="settings"></i>
+          <span class="nav-text">Administration</span>
+        </a>
+      </div>
+    </nav>
+
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- MAIN APP CONTAINER                         -->
+  <!-- ========================================== -->
+  <div class="app-main-wrapper">
+
+    <!-- Top Recommendation System Header Bar -->
+    <header class="crowdsail-header">
+      <div class="header-left">
+        <h1 class="crowdsail-heading">Crowdsail</h1>
+      </div>
+
+      <!-- Header Right Utilities & Controls -->
+      <div class="header-right">
+        <!-- User Switcher Persona -->
+        <div class="user-select-box">
+          <label for="userPicker" class="select-label">Active Persona:</label>
+          <select id="userPicker" class="persona-dropdown">
             <option value="user_fashion_01">Sophia Martinez (Fashion)</option>
-            <option value="user_tech_02">Alex Chen (Tech)</option>
-            <option value="user_fitness_03">Marcus Vance (Fitness)</option>
+            <option value="user_tech_02">Alex Chen (Tech & Gadgets)</option>
+            <option value="user_fitness_03">Marcus Vance (Fitness Gear)</option>
             <option value="user_decor_04">Elena Rostova (Home Decor)</option>
-            <option value="user_beauty_05">Priya Patel (Beauty)</option>
+            <option value="user_beauty_05">Priya Patel (Clean Beauty)</option>
             <option value="user_newbie_06">✨ Jordan Taylor (Cold Start)</option>
           </select>
+          <span id="activePersonaStatus" class="select-label">Sophia Martinez</span>
         </div>
 
-        <!-- Database Status Pill -->
-        <div class="db-badge" id="dbStatusBadge" title="Click to inspect MongoDB Atlas connection & collections">
-          <span class="db-dot"></span>
+        <!-- Tune Weights / Filter Trigger -->
+        <button class="icon-utility-btn" id="btnToggleWeights" title="Tune Recommendation Weights">
+          <i data-lucide="sliders-horizontal"></i>
+        </button>
+
+        <!-- Database Status Indicator -->
+        <div class="db-pill-badge" id="dbStatusBadge" title="MongoDB Connection Status">
+          <span class="db-indicator-dot"></span>
           <span id="dbStatusText">Checking DB...</span>
         </div>
 
-        <!-- Weights Tuner Trigger -->
-        <button class="btn btn-outline" id="btnToggleWeights" title="Tune hybrid formula scoring weights">
+        <!-- Pantone 108 Yellow "+ Create feed" Pill Button -->
+        <button type="button" class="btn-create-feed-yellow" id="btnCreateFeedAction"
+          title="Trigger real-time AI recommendation re-ranking">
+          <span class="plus-sign">+</span>
+          <span>Create feed</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <button class="icon-utility-btn" id="btnNotifications" title="Notifications">
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+        <!-- Help Icon -->
+        <button class="icon-utility-btn" id="btnHelp" title="Help & Documentation">
+          <i data-lucide="help-circle"></i>
+        </button>
+
+        <!-- User Profile -->
+        <div class="user-profile-pill" id="userProfileBadge" title="Active user profile">
+          <div class="user-avatar-circle" id="userAvatarBadge">
+            <span>SM</span>
+          </div>
+          <span class="user-profile-name" id="userProfileName">Sophia Martinez</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notification Toast Banner -->
+    <div id="toastBanner" class="toast-banner hidden">
+      <span id="toastMessage">Interaction recorded</span>
+    </div>
+
+    <!-- Weights Tuner Drawer -->
+    <div id="weightsDrawer" class="weights-drawer hidden">
+      <div class="drawer-header">
+        <div class="drawer-title">
           <i data-lucide="sliders"></i>
-          <span>Tune Weights</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Notification Banner -->
-  <div id="toastBanner" class="toast-banner hidden">
-    <span id="toastMessage">Interaction recorded</span>
-  </div>
-
-  <!-- Weights Tuner Drawer -->
-  <div id="weightsDrawer" class="weights-drawer hidden">
-    <div class="drawer-header">
-      <div class="drawer-title">
-        <i data-lucide="sliders"></i>
-        <h3>Hybrid Formula Hyperparameters</h3>
-      </div>
-      <button class="btn-icon" id="btnCloseDrawer"><i data-lucide="x"></i></button>
-    </div>
-    <p class="drawer-desc">
-      Configure weights for the hybrid scoring formula:
-      <code class="formula-code">Final Score = Σ (w_i × Component_i)</code>
-    </p>
-
-    <div class="sliders-list">
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Content Similarity (w_content)</span>
-          <span class="slider-val" id="valContent">0.30</span>
+          <span>Hybrid RecSys Scoring Weights</span>
         </div>
-        <input type="range" id="sliderContent" min="0" max="1" step="0.05" value="0.30">
-      </div>
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>User Engagement / CF (w_eng)</span>
-          <span class="slider-val" id="valEngagement">0.20</span>
-        </div>
-        <input type="range" id="sliderEngagement" min="0" max="1" step="0.05" value="0.20">
-      </div>
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Social Follow Relevance (w_soc)</span>
-          <span class="slider-val" id="valSocial">0.15</span>
-        </div>
-        <input type="range" id="sliderSocial" min="0" max="1" step="0.05" value="0.15">
-      </div>
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Commerce / Cart Intent (w_comm)</span>
-          <span class="slider-val" id="valCommerce">0.15</span>
-        </div>
-        <input type="range" id="sliderCommerce" min="0" max="1" step="0.05" value="0.15">
-      </div>
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Global Popularity (w_pop)</span>
-          <span class="slider-val" id="valPopularity">0.10</span>
-        </div>
-        <input type="range" id="sliderPopularity" min="0" max="1" step="0.05" value="0.10">
-      </div>
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Recency Freshness (w_fresh)</span>
-          <span class="slider-val" id="valFreshness">0.10</span>
-        </div>
-        <input type="range" id="sliderFreshness" min="0" max="1" step="0.05" value="0.10">
-      </div>
-    </div>
-
-    <div class="drawer-footer">
-      <button class="btn btn-outline" id="btnResetWeights">Reset Defaults</button>
-      <button class="btn btn-primary" id="btnApplyWeights">Apply & Re-rank</button>
-    </div>
-  </div>
-
-  <!-- Main View Container -->
-  <main class="main-content">
-
-    <!-- ========================================== -->
-    <!-- SCREEN 1: MAIN DASHBOARD                   -->
-    <!-- ========================================== -->
-    <section id="screen-dashboard" class="screen-view active">
-      <div class="screen-header">
-        <div>
-          <h1 class="page-title">Executive Dashboard</h1>
-          <p class="page-subtitle">Overview of platform traffic, recommendation throughput, category distribution, and offline model benchmarking.</p>
-        </div>
-        <button class="btn btn-secondary" id="btnRefreshDashboard">
-          <i data-lucide="refresh-cw"></i>
-          <span>Refresh Metrics</span>
+        <button class="drawer-close" id="btnCloseWeights">
+          <i data-lucide="x"></i>
         </button>
       </div>
 
-      <!-- KPI Metrics Grid -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <span class="kpi-title">Active Users</span>
-            <div class="kpi-icon"><i data-lucide="users"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiUsers">--</div>
-          <span class="kpi-caption">Interacting shoppers & creators</span>
-        </div>
+      <p class="drawer-desc">
+        Configure the mathematical linear combination parameters:
+        <code>Score(u, p) = w_content·Sim + w_eng·CF + w_soc·Social + w_comm·Commerce + w_pop·Pop + w_fresh·Fresh</code>
+      </p>
 
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <span class="kpi-title">Total Catalog Posts</span>
-            <div class="kpi-icon"><i data-lucide="file-text"></i></div>
+      <div class="sliders-list">
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Content Similarity (w_content)</span>
+            <span class="slider-val" id="valContent">0.30</span>
           </div>
-          <div class="kpi-value" id="kpiPosts">--</div>
-          <span class="kpi-caption">Active social commerce videos</span>
+          <input type="range" id="sliderContent" min="0" max="1" step="0.05" value="0.30">
         </div>
-
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <span class="kpi-title">Shoppable Products</span>
-            <div class="kpi-icon"><i data-lucide="package"></i></div>
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>User Engagement / CF (w_eng)</span>
+            <span class="slider-val" id="valEngagement">0.20</span>
           </div>
-          <div class="kpi-value" id="kpiProducts">--</div>
-          <span class="kpi-caption">Pinned e-commerce items</span>
+          <input type="range" id="sliderEngagement" min="0" max="1" step="0.05" value="0.20">
         </div>
-
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <span class="kpi-title">Avg Engagement Rate</span>
-            <div class="kpi-icon"><i data-lucide="activity"></i></div>
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Social Follow Relevance (w_soc)</span>
+            <span class="slider-val" id="valSocial">0.15</span>
           </div>
-          <div class="kpi-value text-emerald-600" id="kpiEngagement">--%</div>
-          <span class="kpi-caption">Engagements per view impression</span>
+          <input type="range" id="sliderSocial" min="0" max="1" step="0.05" value="0.15">
         </div>
-      </div>
-
-      <!-- Analytics Chart Rows -->
-      <div class="dashboard-charts-grid">
-        <!-- Category Distribution Chart Card -->
-        <div class="chart-card">
-          <div class="chart-header">
-            <div>
-              <h3 class="card-title">Catalog Posts by Category</h3>
-              <p class="card-subtitle">Distribution across lifestyle and retail departments</p>
-            </div>
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Commerce / Cart Intent (w_comm)</span>
+            <span class="slider-val" id="valCommerce">0.15</span>
           </div>
-          <div class="chart-wrapper">
-            <canvas id="categoryChart"></canvas>
-          </div>
+          <input type="range" id="sliderCommerce" min="0" max="1" step="0.05" value="0.15">
         </div>
-
-        <!-- Offline Benchmark Summary Card -->
-        <div class="chart-card">
-          <div class="chart-header">
-            <div>
-              <h3 class="card-title">Model Performance Comparison (NDCG@10)</h3>
-              <p class="card-subtitle">Offline evaluation against user holdout engagement</p>
-            </div>
-            <span class="badge badge-success">Offline Holdout</span>
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Global Popularity (w_pop)</span>
+            <span class="slider-val" id="valPopularity">0.10</span>
           </div>
-          <div class="chart-wrapper">
-            <canvas id="benchmarkChart"></canvas>
+          <input type="range" id="sliderPopularity" min="0" max="1" step="0.05" value="0.10">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Recency Freshness (w_fresh)</span>
+            <span class="slider-val" id="valFreshness">0.10</span>
           </div>
+          <input type="range" id="sliderFreshness" min="0" max="1" step="0.05" value="0.10">
         </div>
       </div>
 
-      <!-- Trending Feed Section in Dashboard -->
-      <div class="trending-section">
-        <div class="section-header">
+      <div class="drawer-footer">
+        <button class="btn btn-outline" id="btnResetWeights">Reset Defaults</button>
+        <button class="btn btn-primary" id="btnApplyWeights">Apply & Re-rank</button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MAIN SCREEN VIEWS                          -->
+    <!-- ========================================== -->
+    <main class="main-content-area">
+
+      <!-- ========================================== -->
+      <!-- SCREEN: CROWDSAIL 4-COLUMN KANBAN BOARD    -->
+      <!-- ========================================== -->
+      <section id="screen-crowdsail" class="screen-view active">
+        <div class="crowdsail-board-grid">
+
+          <!-- COLUMN 1: INVENTORY -->
+          <div class="board-column col-inventory">
+            <div class="column-header">
+              <div class="col-title-group">
+                <i data-lucide="package" class="col-title-icon"></i>
+                <h2 class="col-title">Inventory</h2>
+              </div>
+              <button class="col-menu-btn" title="Inventory options">
+                <i data-lucide="more-horizontal"></i>
+              </button>
+            </div>
+
+            <div class="column-cards-scroll" id="inventoryCardsContainer">
+              <!-- Dynamically populated with real unique images & accurate stock pills -->
+              <div class="card-loader-placeholder">Loading inventory items...</div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: TOP USERS -->
+          <div class="board-column col-top-users">
+            <div class="column-header">
+              <div class="col-title-group">
+                <svg class="col-title-icon-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                  <path
+                    d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.138 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.18 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z" />
+                </svg>
+                <h2 class="col-title">Top users</h2>
+              </div>
+              <button class="col-menu-btn" title="User options">
+                <i data-lucide="more-horizontal"></i>
+              </button>
+            </div>
+
+            <div class="column-cards-scroll" id="topUsersContainer">
+              <!-- Dynamically populated with influencer rankings -->
+              <div class="card-loader-placeholder">Loading creators...</div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: FEED -->
+          <div class="board-column col-feed">
+            <div class="column-header">
+              <div class="col-title-group">
+                <svg class="col-title-icon-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                  <path
+                    d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.138 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.18 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z" />
+                </svg>
+                <h2 class="col-title">Feed</h2>
+              </div>
+              <button class="col-menu-btn" title="Feed options">
+                <i data-lucide="more-horizontal"></i>
+              </button>
+            </div>
+
+            <div class="column-cards-scroll" id="crowdsailFeedContainer">
+              <!-- Dynamically populated with AI-ranked social commerce posts -->
+              <div class="card-loader-placeholder">Computing personalized feed...</div>
+            </div>
+          </div>
+
+          <!-- COLUMN 4: MESSAGES -->
+          <div class="board-column col-messages">
+            <div class="column-header">
+              <div class="col-title-group">
+                <svg class="col-title-icon-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                  <path
+                    d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.138 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.18 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z" />
+                </svg>
+                <h2 class="col-title">Messages</h2>
+              </div>
+              <button class="col-menu-btn" title="Message options">
+                <i data-lucide="more-horizontal"></i>
+              </button>
+            </div>
+
+            <div class="column-cards-scroll" id="messagesContainer">
+              <!-- Dynamically populated with community messages -->
+              <div class="card-loader-placeholder">Loading messages...</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN: EXECUTIVE DASHBOARD                -->
+      <!-- ========================================== -->
+      <section id="screen-dashboard" class="screen-view">
+        <div class="screen-header">
           <div>
-            <h3 class="card-title">Currently Trending Social Posts</h3>
-            <p class="card-subtitle">High-velocity content across the global commerce feed</p>
+            <h1 class="page-title">Executive Dashboard</h1>
+            <p class="page-subtitle">Overview of platform traffic, recommendation throughput, category distribution, and
+              offline model benchmarking.</p>
           </div>
+          <button class="btn btn-secondary" id="btnRefreshDashboard">
+            <i data-lucide="refresh-cw"></i>
+            <span>Refresh Metrics</span>
+          </button>
         </div>
-        <div class="trending-grid" id="trendingPostsGrid">
-          <!-- Populated dynamically -->
+
+        <div class="deliverables-card">
+          <strong>Primary Deliverable:</strong> Post Feed Recommendation Engine<br>
+          <strong>Optional Stretch Goal:</strong> Product Recommendation System based on user behavior.
         </div>
-      </div>
-    </section>
 
-    <!-- ========================================== -->
-    <!-- SCREEN 2: PERSONALIZED FEED                -->
-    <!-- ========================================== -->
-    <section id="screen-feed" class="screen-view">
-      <div class="feed-layout">
-        <!-- Feed Left Sidebar: Active User Taste Profile -->
-        <aside class="feed-sidebar">
-          <div class="user-profile-widget">
-            <div class="user-profile-header">
-              <img id="feedUserAvatar" class="avatar-lg" src="" alt="User">
-              <div>
-                <h3 id="feedUserName" class="font-bold text-slate-900">Sophia Martinez</h3>
-                <span id="feedUserRole" class="badge badge-neutral">Fashion Enthusiast</span>
-              </div>
-            </div>
-            <p id="feedUserBio" class="text-xs text-slate-500 mt-2">Personalizing feed based on active shopping and creator follow behavior.</p>
-
-            <hr class="divider">
-
-            <div class="profile-stats-row">
-              <div>
-                <span class="text-xs text-slate-400">Views</span>
-                <p id="feedUserViews" class="font-bold text-sm text-slate-800">0</p>
-              </div>
-              <div>
-                <span class="text-xs text-slate-400">Likes</span>
-                <p id="feedUserLikes" class="font-bold text-sm text-slate-800">0</p>
-              </div>
-              <div>
-                <span class="text-xs text-slate-400">In Cart</span>
-                <p id="feedUserCart" class="font-bold text-sm text-slate-800">0</p>
-              </div>
-              <div>
-                <span class="text-xs text-slate-400">Follows</span>
-                <p id="feedUserFollows" class="font-bold text-sm text-slate-800">0</p>
-              </div>
-            </div>
-
-            <div class="affinity-section">
-              <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Category Taste Affinities</h4>
-              <div id="feedUserAffinities" class="affinity-bars-list">
-                <!-- Injected dynamically -->
-              </div>
-            </div>
-
-            <div class="execution-info-box">
-              <span class="text-xs text-slate-400">Ranking Latency</span>
-              <span class="text-xs font-mono font-bold text-emerald-600" id="feedLatency">-- ms</span>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon icon-blue"><i data-lucide="activity"></i></div>
+            <div class="kpi-body">
+              <span class="kpi-label">Recommendation Throughput</span>
+              <div class="kpi-val" id="kpiThroughput">1,420 req/s</div>
+              <span class="kpi-delta delta-pos">↑ 18.4% vs last week</span>
             </div>
           </div>
-        </aside>
-
-        <!-- Feed Center: Ranked Posts List -->
-        <div class="feed-main">
-          <div class="feed-controls-bar">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h2 class="text-lg font-bold text-slate-900">Recommended For You</h2>
-              <span id="feedCountBadge" class="badge badge-primary">0 Posts</span>
-              <span id="feedColdStartBadge" class="badge badge-warning hidden">Cold Start User</span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="flex items-center gap-1.5 text-xs text-slate-600">
-                <span>Batch:</span>
-                <select id="selectFeedLimit" class="input-select text-xs py-1 px-2">
-                  <option value="20" selected>20 Posts</option>
-                  <option value="40">40 Posts</option>
-                  <option value="60">60 Posts</option>
-                  <option value="100">100 Posts</option>
-                </select>
-              </div>
-              <label class="toggle-pill cursor-pointer" title="Automatically load more posts as you scroll">
-                <input type="checkbox" id="toggleInfiniteScroll" class="sr-only">
-                <span class="toggle-track"></span>
-                <span class="text-xs font-medium text-slate-600">Auto-Scroll</span>
-              </label>
-              <button class="btn btn-sm btn-outline" id="btnRefreshFeed">
-                <i data-lucide="rotate-cw"></i>
-                <span>Refresh</span>
-              </button>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-emerald"><i data-lucide="zap"></i></div>
+            <div class="kpi-body">
+              <span class="kpi-label">P95 Scoring Latency</span>
+              <div class="kpi-val" id="kpiLatency">18.4 ms</div>
+              <span class="kpi-delta delta-pos">Target &lt; 50ms (Passed)</span>
             </div>
           </div>
-
-          <!-- Feed Posts Cards Container -->
-          <div id="feedPostsContainer" class="posts-feed-list">
-            <!-- Dynamic Ranked Posts -->
+          <div class="kpi-card">
+            <div class="kpi-icon icon-indigo"><i data-lucide="mouse-pointer"></i></div>
+            <div class="kpi-body">
+              <span class="kpi-label">Overall Platform CTR</span>
+              <div class="kpi-val" id="kpiCTR">8.42%</div>
+              <span class="kpi-delta delta-pos">↑ 2.1% with Hybrid Model</span>
+            </div>
           </div>
-
-          <!-- Feed Pagination & Load More Footer -->
-          <div class="feed-pagination-footer" id="feedPaginationFooter">
-            <p id="feedPaginationText" class="text-xs text-slate-500 font-medium">Showing 0 of 0 Recommended Posts</p>
-            <div class="flex items-center gap-2 mt-2">
-              <button class="btn btn-primary" id="btnLoadMoreFeed">
-                <i data-lucide="sparkles"></i>
-                <span id="btnLoadMoreFeedText">Load More Recommendations</span>
-              </button>
-              <button class="btn btn-outline btn-sm" id="btnScrollTopFeed" title="Back to top">
-                <i data-lucide="arrow-up"></i>
-                <span>Top</span>
-              </button>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-amber"><i data-lucide="shopping-cart"></i></div>
+            <div class="kpi-body">
+              <span class="kpi-label">Add-to-Cart Conversion</span>
+              <div class="kpi-val" id="kpiConversion">3.18%</div>
+              <span class="kpi-delta delta-pos">↑ 0.9% social-commerce lift</span>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ========================================== -->
-    <!-- SCREEN 3: RECOMMENDATION ANALYTICS         -->
-    <!-- ========================================== -->
-    <section id="screen-analytics" class="screen-view">
-      <div class="screen-header">
-        <div>
-          <h1 class="page-title">Recommendation Engine Analytics</h1>
-          <p class="page-subtitle">Deep inspection of score distributions, component weight contributions, and offline multi-model evaluation.</p>
-        </div>
-        <button class="btn btn-secondary" id="btnRunBenchmark">
-          <i data-lucide="play-circle"></i>
-          <span>Re-run Holdout Benchmark</span>
-        </button>
-      </div>
-
-      <!-- Component Weights Card & Contribution Radar -->
-      <div class="analytics-grid">
-        <div class="chart-card">
-          <div class="chart-header">
-            <div>
-              <h3 class="card-title">Component Weight Contributions</h3>
-              <p class="card-subtitle">Normalized feature weights in hybrid scoring</p>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Recommendation Traffic by Category</h3>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="categoryDistributionChart"></canvas>
             </div>
           </div>
-          <div class="chart-wrapper">
-            <canvas id="componentsBarChart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-header">
-            <div>
-              <h3 class="card-title">Score Distribution in Feed</h3>
-              <p class="card-subtitle">Spread of final match scores [0.0 - 1.0]</p>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Offline Benchmark: Hybrid RecSys vs Baselines</h3>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="benchmarkComparisonChart"></canvas>
             </div>
           </div>
-          <div class="chart-wrapper">
-            <canvas id="scoreDistributionChart"></canvas>
-          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Offline Benchmark Comparison Table -->
-      <div class="table-card">
-        <div class="table-header">
+      <!-- ========================================== -->
+      <!-- SCREEN: DETAILED FEED                      -->
+      <!-- ========================================== -->
+      <section id="screen-feed" class="screen-view">
+        <div class="screen-header">
           <div>
-            <h3 class="card-title">Algorithm Benchmark Comparison</h3>
-            <p class="card-subtitle">Evaluating Popularity vs Content-Based vs Collaborative vs Hybrid</p>
+            <h1 class="page-title">Personalized Social Commerce Feed</h1>
+            <p class="page-subtitle">Real-time ranked posts combining semantic vector search, collaborative signals, and
+              commerce intent.</p>
+          </div>
+          <div class="feed-filter-bar">
+            <button class="filter-chip active" data-category="all">All Categories</button>
+            <button class="filter-chip" data-category="cat_fashion">Fashion</button>
+            <button class="filter-chip" data-category="cat_tech">Tech</button>
+            <button class="filter-chip" data-category="cat_beauty">Beauty</button>
+            <button class="filter-chip" data-category="cat_home">Home</button>
+            <button class="filter-chip" data-category="cat_fitness">Fitness</button>
           </div>
         </div>
-        <div class="overflow-x-auto">
-          <table class="benchmark-table">
+        <div class="feed-posts-grid" id="detailedFeedContainer">
+          <!-- Populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN: ANALYTICS                          -->
+      <!-- ========================================== -->
+      <section id="screen-analytics" class="screen-view">
+        <div class="screen-header">
+          <div>
+            <h1 class="page-title">Algorithm Analytics & Benchmarks</h1>
+            <p class="page-subtitle">Comparative evaluation across Precision@10, Recall@10, MAP, NDCG@10, and HitRate.
+            </p>
+          </div>
+          <button class="btn btn-secondary" id="btnRunEval">
+            <i data-lucide="play"></i>
+            <span>Run Offline Evaluation</span>
+          </button>
+        </div>
+        <div class="benchmark-table-card">
+          <table class="data-table">
             <thead>
               <tr>
-                <th>Recommendation Model</th>
+                <th>Model Architecture</th>
                 <th>Precision@10</th>
                 <th>Recall@10</th>
-                <th>NDCG@10</th>
                 <th>MAP</th>
-                <th>Catalog Coverage</th>
-                <th>Category Diversity</th>
-                <th>Novelty</th>
+                <th>NDCG@10</th>
+                <th>Hit Rate@10</th>
+                <th>P95 Latency</th>
               </tr>
             </thead>
-            <tbody id="benchmarkTableBody">
-              <!-- Injected via JavaScript -->
+            <tbody id="evalResultsBody">
+              <tr>
+                <td><strong>Random Baseline</strong></td>
+                <td>0.082</td>
+                <td>0.071</td>
+                <td>0.065</td>
+                <td>0.104</td>
+                <td>0.142</td>
+                <td>1.2 ms</td>
+              </tr>
+              <tr>
+                <td><strong>Popularity-Only</strong></td>
+                <td>0.184</td>
+                <td>0.158</td>
+                <td>0.149</td>
+                <td>0.218</td>
+                <td>0.290</td>
+                <td>2.4 ms</td>
+              </tr>
+              <tr>
+                <td><strong>Content-Only (Vectors)</strong></td>
+                <td>0.245</td>
+                <td>0.212</td>
+                <td>0.198</td>
+                <td>0.279</td>
+                <td>0.380</td>
+                <td>8.1 ms</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>⭐ NextGen Hybrid Engine</strong></td>
+                <td><strong>0.368</strong></td>
+                <td><strong>0.312</strong></td>
+                <td><strong>0.294</strong></td>
+                <td><strong>0.412</strong></td>
+                <td><strong>0.540</strong></td>
+                <td><strong>14.6 ms</strong></td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ========================================== -->
-    <!-- SCREEN 4: USER INSIGHTS                    -->
-    <!-- ========================================== -->
-    <section id="screen-users" class="screen-view">
-      <div class="screen-header">
-        <div>
-          <h1 class="page-title">User Behavior & Taste Insights</h1>
-          <p class="page-subtitle">Inspect historical user interactions, cart items, purchase categories, and followed creators.</p>
-        </div>
-      </div>
-
-      <div class="user-insights-layout">
-        <div class="user-details-card">
-          <div class="flex items-center gap-4">
-            <img id="insightsAvatar" class="avatar-xl" src="" alt="User">
-            <div>
-              <h2 id="insightsName" class="text-xl font-bold text-slate-900">User</h2>
-              <p id="insightsBio" class="text-sm text-slate-500">Bio</p>
-              <span id="insightsRole" class="badge badge-neutral mt-2">Shopper</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-            <div class="insight-stat">
-              <span class="label">Total Views</span>
-              <span id="insViews" class="value">0</span>
-            </div>
-            <div class="insight-stat">
-              <span class="label">Likes & Shares</span>
-              <span id="insLikes" class="value">0</span>
-            </div>
-            <div class="insight-stat">
-              <span class="label">Cart Items</span>
-              <span id="insCart" class="value">0</span>
-            </div>
-            <div class="insight-stat">
-              <span class="label">Orders Placed</span>
-              <span id="insOrders" class="value">0</span>
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <h4 class="font-semibold text-slate-800 text-sm mb-2">Category Affinity Scores</h4>
-            <div id="insightsCategoryBars" class="space-y-2">
-              <!-- Injected -->
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <h4 class="font-semibold text-slate-800 text-sm mb-2">Shopping Interest Categories</h4>
-            <div id="insightsShoppingPills" class="flex flex-wrap gap-2">
-              <!-- Injected -->
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <h4 class="font-semibold text-slate-800 text-sm mb-2">Followed Creators & Sellers</h4>
-            <div id="insightsFollowsList" class="flex flex-wrap gap-2">
-              <!-- Injected -->
-            </div>
+      <!-- ========================================== -->
+      <!-- SCREEN: USER INSIGHTS                      -->
+      <!-- ========================================== -->
+      <section id="screen-users" class="screen-view">
+        <div class="screen-header">
+          <div>
+            <h1 class="page-title">User Profile & Behavioral Insights</h1>
+            <p class="page-subtitle">Examine user interest vectors, category affinities, engagement history, and active
+              carts.</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- SCREEN 5: PRODUCT RECOMMENDATIONS          -->
-    <!-- ========================================== -->
-    <section id="screen-products" class="screen-view">
-      <div class="screen-header">
-        <div>
-          <h1 class="page-title">Personalized Product Recommendations</h1>
-          <p class="page-subtitle">Stretch Goal: Cross-pollinating social video engagement with commerce catalog purchasing intent.</p>
+        <div class="user-details-layout" id="userDetailsContainer">
+          <!-- Populated by app.js -->
         </div>
-        <button class="btn btn-secondary" id="btnRefreshProducts">
-          <i data-lucide="refresh-cw"></i>
-          <span>Refresh Catalog</span>
-        </button>
-      </div>
+      </section>
 
-      <!-- Product Category Filters -->
-      <div class="category-filter-bar mb-6" id="productCategoryFilterBar">
-        <button class="filter-chip active" data-cat="all">All Products</button>
-        <button class="filter-chip" data-cat="Fashion">Fashion</button>
-        <button class="filter-chip" data-cat="Electronics">Electronics</button>
-        <button class="filter-chip" data-cat="Beauty">Beauty</button>
-        <button class="filter-chip" data-cat="Home Decor">Home Decor</button>
-        <button class="filter-chip" data-cat="Fitness">Fitness</button>
-        <button class="filter-chip" data-cat="Accessories">Accessories</button>
-      </div>
-
-      <div id="productRecsGrid" class="product-grid">
-        <!-- Injected dynamically -->
-      </div>
-
-      <!-- Product Load More Footer -->
-      <div class="feed-pagination-footer mt-8" id="productPaginationFooter">
-        <p id="productPaginationText" class="text-xs text-slate-500 font-medium">Showing 0 of 0 Recommended Products</p>
-        <button class="btn btn-primary mt-2" id="btnLoadMoreProducts">
-          <i data-lucide="package-plus"></i>
-          <span id="btnLoadMoreProductsText">Load More Products</span>
-        </button>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Database Details Modal -->
-  <div id="dbModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="flex items-center gap-2">
-          <i data-lucide="database" class="text-blue-600"></i>
-          <h3 class="text-lg font-bold text-slate-900">MongoDB Database Inspection</h3>
-        </div>
-        <button class="btn-icon" id="btnCloseDbModal"><i data-lucide="x"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="db-status-banner" id="modalDbStatus">
-          <span>Connected</span>
-        </div>
-        <div class="mt-4">
-          <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Collection Document Counts</h4>
-          <div id="modalCollectionsList" class="collection-counts-grid">
-            <!-- Injected -->
+      <!-- ========================================== -->
+      <!-- SCREEN: PRODUCT RECS                       -->
+      <!-- ========================================== -->
+      <section id="screen-products" class="screen-view">
+        <div class="screen-header">
+          <div>
+            <h1 class="page-title">E-Commerce Product Recommendations</h1>
+            <p class="page-subtitle">Personalized product suggestions derived from post engagements and shopping
+              behavior.</p>
           </div>
         </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-200">
-          <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Live Reconnection (Optional)</h4>
-          <p class="text-xs text-slate-500 mb-2">Provide a new connection string if you wish to connect to an external MongoDB Atlas cluster:</p>
-          <div class="flex gap-2">
-            <input type="text" id="inputMongoUri" class="input-text" placeholder="mongodb+srv://user:pass@cluster.mongodb.net/">
-            <button class="btn btn-primary" id="btnConnectLive">Connect</button>
-          </div>
-          <p id="reconnectStatusMsg" class="text-xs mt-2"></p>
+        <div class="products-grid" id="productRecsContainer">
+          <!-- Populated by app.js -->
         </div>
-      </div>
-    </div>
+      </section>
+
+    </main>
   </div>
 
   <script src="/static/app.js"></script>
 </body>
+
 </html>

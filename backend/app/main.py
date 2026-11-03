@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="NextGen Social Commerce Recommendation Engine",
+    title="Crowdsail",
     description="End-to-End Recommendation Engine for Social Commerce Feed & Products (Jr. AI Engineer Assignment)",
     version="1.0.0",
     lifespan=lifespan
@@ -53,6 +53,13 @@ if os.path.exists(FRONTEND_DIR):
         if os.path.exists(index_file):
             return FileResponse(index_file)
         return {"message": "NextGen Recommendation Engine API is running. Visit /docs for OpenAPI documentation."}
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def serve_favicon():
+        return FileResponse(
+            os.path.join(FRONTEND_DIR, "favicon.svg"),
+            media_type="image/svg+xml",
+        )
 
 
 if __name__ == "__main__":
