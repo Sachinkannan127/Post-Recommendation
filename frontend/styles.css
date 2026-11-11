@@ -321,6 +321,110 @@ body.crowdsail-app-body {
   line-height: 1.4;
 }
 
+.feed-post-card,
+.instagram-post-card {
+  cursor: pointer;
+}
+
+.post-product-recommendation {
+  margin: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+  cursor: default;
+}
+
+.post-product-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.post-product-label {
+  color: #1d4ed8;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.post-product-match {
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.post-product-content {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.post-product-image {
+  width: 76px;
+  height: 76px;
+  border-radius: 0.55rem;
+  object-fit: cover;
+  background: #e2e8f0;
+}
+
+.post-product-details {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.post-product-details strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-product-details span {
+  color: #64748b;
+  font-size: 0.74rem;
+}
+
+.post-product-details b {
+  color: #1d4ed8;
+  font-size: 0.82rem;
+}
+
+.post-product-cart {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #1d4ed8;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.post-product-cart:hover {
+  background: #1e40af;
+}
+
+.post-product-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #475569;
+  font-size: 0.78rem;
+}
+
+.post-product-empty strong {
+  color: #1e3a8a;
+}
+
 .inventory-item-card,
 .message-item-card {
   cursor: pointer;
@@ -1535,6 +1639,10 @@ body.crowdsail-app-body {
   cursor: pointer;
   font-size: 1.45rem;
   line-height: 1;
+}
+
+.instagram-action-row button.liked {
+  color: #e11d48;
 }
 
 .instagram-action-row .instagram-save-btn {

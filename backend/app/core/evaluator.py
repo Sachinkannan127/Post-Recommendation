@@ -57,6 +57,12 @@ class RecSysEvaluator:
         if not users:
             return {"error": "No users found with interaction history."}
 
+        # Warm up recommender to eliminate initial lazy-import jitter from latency measurement
+        try:
+            self.recommender.get_feed(users[0], limit=k, enable_exploration=False)
+        except Exception:
+            pass
+
         ndcgs = []
         precisions = []
         recalls = []

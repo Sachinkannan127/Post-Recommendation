@@ -29,6 +29,7 @@ const state = {
   likedPosts: new Set(),
   retweetedPosts: new Set(),
   cartItems: new Set(),
+  postProducts: new Map(),
 };
 
 // Fallback high-res real photo lookup guaranteeing ZERO duplicates across the entire platform
@@ -266,6 +267,15 @@ function setupEventListeners() {
     setRecommendationContext("message", card.dataset.messageText || "this message");
   });
 
+  ["crowdsailFeedContainer", "detailedFeedContainer"].forEach((containerId) => {
+    document.getElementById(containerId)?.addEventListener("click", (event) => {
+      if (event.target.closest("button, a, input, select, .post-product-recommendation")) return;
+      const postCard = event.target.closest("[data-post-id]");
+      if (!postCard) return;
+      togglePostProduct(postCard.dataset.postId, postCard);
+    });
+  });
+
   document.querySelectorAll(".col-menu-btn").forEach((button) => {
     button.addEventListener("click", () => {
       showToast(`${button.title.replace(" options", "")} options are not configurable yet`);
@@ -318,6 +328,54 @@ function setRecommendationContext(type, text) {
   } else if (state.activeScreen === "screen-feed") {
     loadDetailedFeed();
   }
+}
+
+function togglePostProduct(postId, postCard) {
+  const existing = postCard.querySelector(".post-product-recommendation");
+  if (existing) {
+    existing.remove();
+    return;
+  }
+
+  const product = state.postProducts.get(postId);
+  const productPanel = document.createElement("div");
+  productPanel.className = "post-product-recommendation";
+
+  if (!product) {
+    productPanel.innerHTML = `
+      <div class="post-product-empty">
+        <strong>No tagged product for this post</strong>
+        <span>Explore the Products section for personalized suggestions.</span>
+      </div>
+    `;
+  } else {
+    const productId = product.product_id || product._id || product.id || "";
+    const title = product.title || product.name || "Recommended product";
+    const image = product.image_url || REAL_IMAGE_CATALOG[productId] ||
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600";
+    const price = Number(product.price);
+    const category = product.category || product.category_id || "Lifestyle";
+
+    productPanel.innerHTML = `
+      <div class="post-product-header">
+        <span class="post-product-label">Recommended product</span>
+        <span class="post-product-match">Based on this post</span>
+      </div>
+      <div class="post-product-content">
+        <img src="${image}" alt="${title}" class="post-product-image" loading="lazy"
+             onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'">
+        <div class="post-product-details">
+          <strong>${title}</strong>
+          <span>${category}</span>
+          <b>${Number.isFinite(price) ? `$${price.toFixed(2)}` : "View product"}</b>
+          <button type="button" class="post-product-cart product-add-cart"
+                  data-product-id="${productId}">Add to Cart</button>
+        </div>
+      </div>
+    `;
+  }
+
+  postCard.appendChild(productPanel);
 }
 
 // ============================================================================
@@ -554,6 +612,7 @@ async function renderCrowdsailFeed(isForceRefresh = false) {
         retweets: Math.floor(Math.random() * 25) + 2,
         likes: Math.floor(Math.random() * 85) + 12
       });
+      state.postProducts.set(p.post_id || p._id || `post_dyn_${idx}`, item.pinned_product || null);
     });
 
     if (requestedUserId !== state.currentUserId) return;
@@ -570,7 +629,7 @@ async function renderCrowdsailFeed(isForceRefresh = false) {
     ` : "";
 
     container.innerHTML = contextRecommendation + renderedFeed.slice(0, 24).map(post => `
-      <div class="feed-post-card" id="card-${post.postId}">
+      <div class="feed-post-card" id="card-${post.postId}" data-post-id="${post.postId}" title="Click to see the recommended product">
         <div class="post-author-row">
           <div class="author-meta-left">
             <img src="${post.avatar}" alt="${post.authorName}" class="author-pic"
@@ -730,7 +789,7 @@ window.handleLike = async function (postId) {
     state.likedPosts.add(postId);
     showToast("❤️ Liked post! Interaction recorded to RecSys model.");
     try {
-      await fetch(`${API_BASE}/interaction`, {
+      const response = await fetch(`${API_BASE}/interaction`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -739,12 +798,20 @@ window.handleLike = async function (postId) {
           interaction_type: "like"
         })
       });
+      if (!response.ok) {
+        throw new Error(`Like request failed (${response.status})`);
+      }
     } catch (error) {
+      state.likedPosts.delete(postId);
       console.error("Failed to record like:", error);
-      showToast("Like applied locally, but the server could not record it");
+      showToast("Could not record the like. Please try again.");
     }
   }
-  renderCrowdsailFeed();
+  if (state.activeScreen === "screen-feed") {
+    loadDetailedFeed();
+  } else if (state.activeScreen === "screen-crowdsail") {
+    renderCrowdsailFeed();
+  }
 };
 
 window.handleRetweet = function (postId) {
@@ -906,8 +973,10 @@ async function loadDetailedFeed() {
       const reason = Array.isArray(item.explanation)
         ? item.explanation[0]
         : (item.explanation?.summary || "Matches your interests and recent activity");
+      const postId = p.post_id || p._id || "recommended_post";
+      state.postProducts.set(postId, item.pinned_product || null);
       return `
-          <article class="instagram-post-card">
+          <article class="instagram-post-card" data-post-id="${postId}" title="Click to see the recommended product">
             <header class="instagram-post-header">
               <div class="instagram-author">
                 <img src="https://images.unsplash.com/photo-${1500000000000 + (Math.abs(author.length * 7919) % 1000000)}?w=100"
@@ -927,7 +996,10 @@ async function loadDetailedFeed() {
             </div>
             <div class="instagram-post-body">
               <div class="instagram-action-row">
-                <button type="button" onclick="showToast('Liked recommendation')">♡</button>
+                <button type="button" class="${state.likedPosts.has(postId) ? "liked" : ""}"
+                        onclick="handleLike('${postId}')">
+                  ${state.likedPosts.has(postId) ? "♥" : "♡"}
+                </button>
                 <button type="button" onclick="handleReply('${p.post_id || p._id || "recommended_post"}')">◯</button>
                 <button type="button" onclick="showToast('Recommendation shared')">➤</button>
                 <button type="button" class="instagram-save-btn" onclick="showToast('Post saved')">▢</button>

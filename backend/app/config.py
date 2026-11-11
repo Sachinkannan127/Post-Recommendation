@@ -16,7 +16,7 @@ from pydantic import Field, ConfigDict
 class Settings(BaseSettings):
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
     
-    PROJECT_NAME: str = "NextGen AI Social Commerce Recommendation Engine"
+    PROJECT_NAME: str = "Social Commerce Recommendation System"
     API_V1_STR: str = "/api"
     
     # MongoDB Atlas Connection Configuration
